@@ -1,0 +1,107 @@
+{
+  "volumes": [],
+  "id": "/shared/registry",
+  "cmd": null,
+  "args": null,
+  "user": null,
+  "env": {
+    "STORAGE_PATH": "/var/lib/registry"
+  },
+  "instances": 1,
+  "cpus": 0.2,
+  "mem": 256,
+  "disk": 0,
+  "gpus": 0,
+  "executor": "",
+  "constraints": [
+    [
+      "hostname",
+      "LIKE",
+      "172.28.5.21"
+    ]
+  ],
+  "fetch": [
+    {
+      "uri": "http://172.28.5.2:8085/domain.crt",
+      "extract": true,
+      "executable": false,
+      "cache": false
+    },
+    {
+      "uri": "http://172.28.5.2:8085/domain.key",
+      "extract": true,
+      "executable": false,
+      "cache": false
+    }
+  ],
+  "storeUrls": [],
+  "backoffSeconds": 1,
+  "backoffFactor": 1.15,
+  "maxLaunchDelaySeconds": 3600,
+  "container": {
+    "type": "DOCKER",
+    "volumes": [
+      {
+        "containerPath": "/var/lib/registry",
+        "hostPath": "/vagrant/regstore",
+        "mode": "RW"
+      }
+    ],
+    "docker": {
+      "image": "registry:2.5.1",
+      "network": "BRIDGE",
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "hostPort": 5000,
+          "servicePort": 10050,
+          "protocol": "tcp",
+          "name": "registry",
+          "labels": {
+            "VIP_0": "/registry:5000"
+          }
+        }
+      ],
+      "privileged": true,
+      "parameters": [],
+      "forcePullImage": false
+    }
+  },
+  "healthChecks": [
+    {
+      "protocol": "MESOS_TCP",
+      "portIndex": 0,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60,
+      "timeoutSeconds": 20,
+      "maxConsecutiveFailures": 3,
+      "ignoreHttp1xx": false
+    }
+  ],
+  "readinessChecks": [],
+  "dependencies": [],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0,
+    "maximumOverCapacity": 0
+  },
+  "labels": {
+    "HAPROXY_GROUP": "internal",
+    "HAPROXY_0_SSL_CERT": "/mnt/mesos/sandbox/registry.pem",
+    "HAPROXY_0_BACKEND_REDIRECT_HTTP_TO_HTTPS": "false",
+    "HAPROXY_0_VHOST": "172.28.5.21"
+  },
+  "acceptedResourceRoles": null,
+  "ipAddress": null,
+  "residency": null,
+  "secrets": {},
+  "taskKillGracePeriodSeconds": null,
+  "portDefinitions": [
+    {
+      "port": 10050,
+      "protocol": "tcp",
+      "labels": {}
+    }
+  ],
+  "requirePorts": true
+}
+
